@@ -1,0 +1,397 @@
+Create Folder for Server
+use command mkdir to create a new Folder
+Yarn Init to start project
+code . in order to code in visual studio code
+
+Setup folders
+  Controllers: Functions when you call an http request.
+  middlewares: in the middle of a request, to validate login, authenticated request, images.
+  models: all of our models
+  router: all of our routes
+  uploads: all of our files
+  utils: Utilities while we grow
+  
+Creating .js files
+  Create your constant folder (ideally should be a .env) that will store the database user details.
+    DB Admin and password
+    DB Host
+    API version
+    IP Server, localhost
+    and export them
+
+  Create index.js which will the connection to the DB (mongoose)
+
+  Create app.js 
+
+Create script
+  above dependencies, you could name it start and use node fileName.js
+
+MongoDB: Our data base
+  Go to website, get default settings
+  Go to create new Database User
+  Create a network access
+  Connect using MongoDB Drivers
+
+Mongoose: ODM (object data modeling)
+  Go to Yarn and get Mongoose
+  Import all the variables that were defined for the DB into index.js
+  Import Mongoose
+  create a const that will store an async arrow function. This function will connect to the DB
+  Inside, you will have try catch.
+  In the try, await mongoose.connect(`all details from mongoDB here`)
+  After the @ you can put the host and delete everything after that.
+  create a clg to confirm you connected
+  Catch will contain the error, so it clude the details, a clg is fine to see the err.
+  Call the function you just created.
+
+Express: (Web Application framework/library for back end API REST, Routes, Etc)
+  Go to Yarn and get Express
+  create a file that will contain Express and import API version from the constants file.
+  create all todo's so you dont forget, routings, body parse, Static Folder,header http-cors, configure routings.
+  create a const that executes express
+  Export express.
+  Import the file to the index folder
+  Create a port with process.env.POST || 3977
+  To start the server, use method .listen with the imported express const, it will have 2 parameter, inside the try.
+  (remember that if you exported without bracers, you are exporting the entire thing, if you export it with bracers, you need to use it as a method)
+  First one is the desired port
+  Second one could be an arrow function to have it console log API REST and the http://IPSERVER:PORT:API:APIVERSION which will basically tell you all the details that you defined.
+
+Nodemon (automatically reloads page after a change is detected)
+  Go to yarn and add it.
+  create a script that will use nodemon with the file.
+
+Configurations for Express
+  Body Parse:
+    What we receive from the client to the server, it's a middleware before handlers.
+    Go to yarn and find body-parser dependency. add it.
+    Import it in the express file.
+
+    Start by using the const that saves the function executing express. 
+    
+    Use the .use method, inside you will use the imported body-parser.
+
+    Two configurations which each use a different bodyparser method:
+
+    .urlencoded({extended: true}) will look at requests from URL encoded requests and extended precises that the req.body object will contain values of any type instead of just strings to transform them into js-accessible variables
+
+    .json() will look at requests where the content-type is json and will transform them into js-accessible variables.
+
+  Static Folder:
+    Start by using the variable that executes express with the .use method. Inside you will have to use the imported file with the method .static to define the folder that you will bring all of your static/uploads
+  
+  CORS:
+    go to yarn and get CORS dependency.
+    Import cors and have exp use cors().
+
+
+
+Insomnia:
+  Create a new enviroment
+  under the JSON create a basepath and use the one you defined (DOUBLE CHECK THIS)
+  create a new folder for auth
+  create a new request with the associated type of endpoint 
+
+Model
+  Import mongoose
+  Create a variable with nameSchema, which will be a new mongoose.Schema, inside you will have an object schema which are the variables that the object should have and define their types
+
+  define a variable that will store mongoose.model, it will ahve 2 params, the first one a name and  the second one execute the schema you defined.
+
+  Export the variable that contains the model (not the schema, the model contains the schema)
+
+Controllers
+  Create a new controller file and import your model
+  Start your CRUD
+
+  Create:
+    async function that receives 2 params. (req,res)
+
+    Define a variable that is an object, with the defined properties, it will store what we provide it. req.body (as it's the information the server is requesting)
+
+    Use try catch so it tries and if there is any error, it catches it.
+
+    Define a new variable with a constructor(creating a new object with the Model imported). The param that will receive is the object with the defined properties we defined earlier (the new object should be created with the information we provided, that's why).
+
+    As it's an async function, await the information and use the method .save() the variable defined from the constructor.
+    res.send it's mandatory or it will be on a loop, you could put inside the variable to have the server show it to you and use .status(number) as well.
+    Remember the catch
+
+  Read: 
+    async function that receives 2 params
+    try catch
+    Define a variable that stores the await model, use .find() method to find every object within that model
+    Remember to use .status and .send
+    Remember the catch
+
+  Update:
+    async function that receives 2 params
+    try catch
+    You have to define what is what we should be looking to listen in order to find it and then update it. Usually we should listen to a unique value to avoid duplicates results.
+
+    define a variable that will store that unique value we are looking. usually the name of this variable it's the same as that value you are looking to search. req.params.uniquevalue
+
+    Also, define a variable that will store what we defined to be updated (all the properties), usually that's the body (we could name that variable body). req.body (req because server is requesting that information)
+
+    define a variable storing the model which is awaiting to findOneandUpdate. 
+    It has 2 params
+    First param is an object with the property to find the unique value requested and compare it to the unique value it has, and the second param is what will be updated.
+
+    Define an if statement in case the client does not exist with a ! symbol, as it will be false if it doesnt exist and define the else as positive.
+
+    Remember the catch
+
+  Delete:
+    async function that receives 2 params
+    try catch
+    You have to define what is what we should be looking to listen in order to find it and then delete it. Usually that's the uniquevalue
+    create a variable that will store that unique value we provide. req.params.uniquevalue
+
+    await model, find and delete, it has one param as it doesn't update, it deletes, so it finds the one, compare it, and delete it.
+  
+  Export module all async functions
+
+Routes:
+  Create a file with the name of the associated route/controller
+  Import express with the require function
+  Import the controller
+  Define a variable storing expressnameyoudefined.Router() (usually it's defined as api)
+  now use .post , .get , .patch , .delete with it's defined route as the 1st param, and the second param will have the controller you imported with the associated method(async function).
+
+  module.export the defined variable that stored the router with bracers.
+
+
+
+Express:
+  Import routings:
+    import and store the route in a variable
+  Configure routings:
+    have exp use the imported route, use the route /api/apiversion and then have it execute the function from the imported route
+
+JWT: // Token Creation, Access Token, Refresh Token, Decodify Token
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+JSDoc
+  use JSdoc for documentation
+  create in package.json a script jsdoc that will check the config file (-c) for jsdoc.json. 
+  Create a jsdoc.json file that will have all the details.
+  Select the source, include: ['sourcefile'], include all the .js$ files you want to includepattern and excludepattern node modules and the name of the file for the documentation folder.
+  In opts define the destination and template if you will be using a custom one.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Short version
+
+mkdir new folder
+yarn init to start package.json
+
+MongoDB 
+
+Dependencies: mongoose, express, nodemon, body-parser, cors, bcryptjs, jsonwebtoken, connect-multiparty
+
+Insomnia as tester
+
+create scripts for start and dev, nodemon.
+
+Constants.js - Create constants with serverinfo(user, pass, host(from mongodb), version, ip)
+
+App.js (Express Config) - express, bodyparser, cors, version from constants file, define a const executing express(), import routes, configure bodyparser(exp.use with urlencoded({extended: true}) method and json method), configure static folder(exp.use(express.static(folderName))), configure cors(exp.use(cors())), configure routings(exp.use with 2 params, first is /api/version and second is the imported route with the method for the api), export express.
+
+Index.js (DB connection) - Mongoose, Express from app.js, Port (process.env.PORT), server info from constants.js, connectDB async arrow function (try catch, await mongoose.connect(URLMONGO), express.listen(PORT, arrow function with clg, API REST, ip:port/api/version) and execute that function).
+
+
+Model - mongoose, create your new mongoose.Schema({define all properties and which type they are}), store mongoose.model(2 params, first one is the name of the model and second one is which schema is using)
+
+Controller - import model, async functions(no arrow), with 2 params (req,res).
+  CRUD
+    C: will need as a body requested from server, the properties defined under the model, this is an object variable, try catch, constructor with param as the object that has the properties, await and use the .save method. (update, use constructor without the method, const user = new user ({
+      name,
+      lastname,
+      email: email.toLowerCase()
+    }))
+    remember to use .status and .send to avoid loop.
+    R: try catch, create a variable storing an await, model with the .find method
+    .status and .send 
+    U: define the value you want to search with, usually a unique value, requested from the server, defined in the model. As we are updating, we also need the body.
+    try catch, store the await model with the method to update(it should have 2 params, what property is looking to compare to find it and what will be using to update), if statement to confirm it exists.
+    D: define the value you want to search with, usually a unique value. Try catch and store the await model with the find and delete method(one param, it's the property it should be looking to compare), if statement to confirm it exists.
+  Export each function.
+
+Routes - express,controller, store express.Router() in a variable (usually called api), use api with .post .get .patch .delete, export api as a method.
+
+
+
+bcryptjs (encrypt stuff)
+  const salt = bcrypt.genSaltSync(10);
+  const hashPassword = bcrypt.hashSync
+
+Model (define unique and other settings to your property)
+  email {
+    type: String,
+    unique: true
+  }
+
+Utils:
+  jwt.js - Token Creation, Access Token, Refresh Token, Decodify Token
+
+Constants:
+  create const for JWT Secret Key, export it.
+
+Utils:
+  Go back to jwt.js, import the secretkey and create a function for creating access token, it will have a param which is the user.
+
+  create an experition const that stores a new date.
+  set the hours for that const, the param that receives is the current hours + 3.
+
+  create a payload const, it will store an object with the following properties:
+    token_type (access or whatever), user_id:(user._id which is defined by mongo), iat (Date.now as it's the initiation access time), exp(the defined expiration time, use getTime method to get the set time).
+
+  Return jwt.sign(payload, secretkey)
+
+  Use the same thing but the time will be a month and type is changed.
+
+create verify function, with param as token, try catch, save in a variable jwt.verify. it has 2 params, the token param and the secret key.
+If statement to check if the token can be verified, export it.
+
+Auth.js controller
+  import jtw, import bcrypt, create login request (function).
+  try catch.
+
+    Login will need 2 properties, email and password to be requested from the body.
+
+    verify if email or password are true, return status and send. (use return)
+
+    store in a variable lower casing the email.
+
+    find one, compare email and use the lowered case email.
+
+    verify if a user exists(use return)
+
+    user.password || empty, stored in variable to avoid overload issues.
+
+    store in a variable awaiting bcryp.compare(inputpassword, storedpassword)
+
+    check if password is true, check if user is active, else res positive, that will have an object showing use the access token and the refresh token using the imported jwt function with both methods, and param is the user.
+
+  refreshAccess Token function
+  try catch, bring token from the requested body.
+  If token doesnt exist, send status and request it.
+  user_id will store all the information from jwt.verifyToken(token)
+  findbyId, compare the _id with user_id
+
+  If it doesnt find the user, respond, otherwise status positive, send an object with accesstoken, which it will create a new access token with the founduser.
+    
+Routes:
+  now create a new route for refreshing the access token under the auth file.
+
+Create a User controller file, to find the users, then create a route file and then add it to the app.js file to be able to use it.
+
+Middleware:
+  import jwt utils
+  create an async function called asureauth with 3 params, req, res and next.
+
+  trycatch
+
+  save the header.authorization from req into a const.
+  verify if there is no valid header, status 403.
+  replace Bearer with nothing, saved that into a const named token. (Insomnia you should go to headers, name it Authorization and under value, first have bearer and then the access token)
+  Save the token payload that comes from the method verifyToken, with the token we just defined
+  Get the {exp} property from the payload
+  Get the current time and saved that.
+  If exp time is equal or less than current time, it should say it has expired.
+  define the req.user as the payload we just received
+  use next() to continue with whatever functions needs to continue.
+
+  catch error and export the function.
+
+In the router, import the middleware, after the first param of the api.get, inside [] call the imported const with the function.
+
+create image file, import path, create a getFileName function, it will receive path.
+save the filepath in a const.
+use split and path.sep to separate the path
+return `paths on the position required using []`
+
+export it
+
+  Under the Controller:
+  import the image file
+  obtain logged user
+  obtain all users
+  create users
+  request {password} from the body
+  Use constructor to create a new user, {...req.body, active: }
+  confirm if there is an existing user
+  confirm if we receive a req.files.avatar
+  save the image.getFileName in a const, inside it's the requested file avatar.
+
+  
+  use salt, bcrypt.genSaltSync(10)
+  hashpassword, bcrypt.hashSync(password,salt)
+
+save the new hashed password to the user.
+
+
+
+
+connect-multiparty
+create a middlware for multiparty, importing it to the folder, save it under a const and use multiparty({uploadDir: './folder/folder'})
+  in order to send files as opposed to json
+  go to the user router and import it.
+import the middleware in the controller and use it after the first middleware.
+
