@@ -206,36 +206,6 @@ JSDoc
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Short version
 
 mkdir new folder
@@ -395,3 +365,249 @@ create a middlware for multiparty, importing it to the folder, save it under a c
   go to the user router and import it.
 import the middleware in the controller and use it after the first middleware.
 
+
+
+
+
+Short version
+
+mkdir new folder
+yarn init to start package.json
+
+MongoDB and Insomnia
+
+Dependencies: mongoose, express, nodemon, body-parser, cors, bcryptjs, jsonwebtoken, connect-multiparty
+
+Create scripts for start and dev(nodemon).
+
+Constants - Create serverinfo (user,pass,host,version,ip) and secret key.
+
+App.js (Express Config) - import: express, bodyparser, cors, version. 
+const using express
+Import routes, Configure Body Parser, configure static folder, configure header http-cors, configure routes (`/api/version`, api), export.
+
+Index.js (DB Connection) - Import: Mongoose, Express (app.js), Constants
+Port, async arrow function, trycatch. mongoose.connect()(`url user,password,host`), express.listen()(2 params, second param is an arrow function, ipserver,port,api,version), call the function.
+
+Model - import: mongoose
+mongoose.Schema (firstname,lastname,password, email(type and unique), role, active, avatar), export mongoose.model
+
+Utils -
+  jwt:
+    Import: jsonwebtoken, secretkey.
+    Create 3 functions, create access token, create refresh token, verify token.
+    Access(user)
+      The idea is to set an expiration date for the token.
+      new Date()
+      setHours(getHours())
+      define payload, it will have: Tokentype, user_id, iat(Date.now()), getTime() from the defined exp token.
+      return jwt.sign(payload, secretkey)
+    Refresh(user)
+      same thing but the date is setMonth and getMonth and tokentype.
+    VerifyToken(token)
+      jwt.verify(token,secretkey)
+      if statement verifying if token was verified.
+    Export
+
+  image:
+    Import: path
+      create 1 function, getFilePath(file)
+      file.path
+      .split(path.sep)
+      return `[i]`
+    Export
+
+Middleware - 
+  multiparty.js:
+    Import: connect-multiparty
+    save multiparty({ uploadDir: './path/path'}) in a const
+    export it.
+
+  auth.js:
+    Import: jwt(utils)
+    create an async function Auth(req,res,next)
+
+    const headerauth = req.headers.authorization
+    if there is no authheader, return no header auth.
+
+     headerauth.replace('Bearer', ''), save that into const called token. (its the token but we remove Bearer)
+
+    get the payload from jwt.verifyToken(token)
+    get the exp from the payload
+
+    save the current time, new Date().getTime()
+
+    if exp is less or equal than current time, send token expired
+    req.user = payload (meaning that it will first verify the token, then it will save the payload we got from the token, (type,id,iat and exp) to be the user)
+    next()
+    export it
+
+
+Controller -
+  auth.js:
+    Import: bcrypt, jwt(utils), model(user)
+    Create async functions: register, login, refreshAccessToken, get
+
+    register
+      need firstname,lastname,password,email from the requested body.
+
+      New User(all details we requested(except password), email toLowerCase(), define role and active)
+      find existing user to create an if statement.
+
+      create your salt with bcryp.genSaltSync and hash your password with bcrypt.hashSync(password,salt)
+      add the hashpassword to the user.
+      save the user.
+
+    login
+      need email, password from requested body.
+
+      if either email or password are not in input, return they are required.
+
+      email toLowercase()
+
+      verify if there is an existing user with that email
+      verify if there its an active user
+
+      inputpassword could be the password or empty, save that.
+      checkpassword with bcrypt.compare(inputpassword,userpassword)
+
+      if checkpassword is negative, verify email or password
+      else status, send object with access and refresh token. (jwt.relatedtoken(existinguser))
+    
+    refreshAccessToken
+      need token from requested body
+      if there is no token, it is required.
+
+      need the user_id from jwt.verifyToken(token from body)
+      find user by the user_id that we got from the token
+
+      if there is no user to find, not found
+      else send object with access jwt.createAccesstoken(userfound)
+
+    get
+      use find() to find all.
+    
+  user.js:
+    Import: Model, bcrypt, image(util)
+    Create 5 Async functions: readMe, readQuery, createUser, updateUser, deleteUser
+
+    readMe
+      need user_id from req.user (usually is the body, but the user its logged in, so we can get that data)
+      
+      find user by id with the id we got.
+      if statement to see if cant find user.
+      res with the founduser. (it will show the user that initially did the request)
+
+    readQuery (in this case we will use active users to read them)(?active=value)
+      need active from req.query
+      let queryResponse = null
+
+      if there is query value is underfined, find all users, otherwise, find the ones that have that value.
+      res the queryResponse
+  
+    createUser
+      need password from body
+      new User ({...req.body, active: value})
+      
+      find if there is an existing user
+      find if there is an avatar with req.files.avatar, getFilePath(req.files.avatar)
+      saved the imagePath in the avatar property for user.
+
+      create a salt with bcrypt
+      hash the password with hashSync
+
+      save the hashedpassword
+      save the user.
+
+    updateUser
+      need id from req.params
+      need the body that we will update it to(userData could be the var that stores it)
+
+      if there is a new password from the body, salt it, hash it and then save it. else, delete new password so there is no errors in case it's blank
+      if there is a req.files.avatar, getFilePath and save it to the property
+
+      findbyIdandUpdate
+      send it.
+
+    deleteUser
+    need id from req.params
+
+    findByIdAndDelete
+    send it.
+
+  Router - 
+    Import: express,middlewares, associated controller. 
+    Router()
+
+    auth.js: create routes for auth, could use path /auth/
+    user.js: create routes for user, could use path /user/, use the right [middlewares]. in all we check authorization, and in all but on .get we check multiparty. (remember params for patch and del)
+
+    export api.
+
+Test with Insomnia(remember to use Headers, Query, MultiPart )
+
+
+
+
+
+
+
+
+
+
+
+Menu
+ New Model for Menu
+  title,path,order,active
+
+Create Controller
+  createMenu
+    new Menu(req.body)
+  getMenus
+    query active ones {active} = req.query
+    if not defined, find().sort({order: 'asc'})
+    if defined, find active ones.
+  updateMenu
+    get id from params
+    save info from body
+  deleteMenu
+    get id from params  
+
+
+Create Routes (getmenus doesnt need middleware)
+Import Route in app
+Config Route in app
+test it
+
+Courses
+  new model for Courses
+  title,miniature,description,url,price,score
+  add .plugin for paginate with mongoose-paginate-v2
+Create course folder in upload folder
+Create controller
+  import image from utils
+  createCourse
+    new Course(req.body)
+    .getFilePath(req.files.miniature)
+    save the path under course.miniature
+
+  getCourses
+    {page = value, limit=value} = req.query
+    options = {
+      page: parseInt(page)
+      limit: parseInt(limit)
+    }
+    await Course.paginate({},options)
+
+  export controllers
+Create Routes (getcourses doesnt need middleware)
+import Route in app
+config Route in app
+test it
+
+
+
+
+
+
+mongoose-paginate-v2
